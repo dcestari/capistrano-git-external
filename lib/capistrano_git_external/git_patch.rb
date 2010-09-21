@@ -3,7 +3,13 @@ module CapistranoGitExternal
     def self.included(base)
       base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
+
       base.class_eval do
+        alias_method :checkout_without_externals, :checkout
+        alias_method :checkout, :checkout_with_externals
+
+        alias_method :sync_without_externals, :sync
+        alias_method :sync, :sync_with_externals
       end
     end
 
@@ -15,22 +21,22 @@ module CapistranoGitExternal
         git = command
         execute = []
 
-        execute << super.send(method_name, revision, destination)
+        execute << self.send(method_name, revision, destination)
 
-#        if variable(:git_enable_externals)
+        if variable(:git_enable_externals)
           execute << "#{git} external init"
           execute << "#{git} external update"
-#        end
+        end
 
         execute.join(" && ")
       end
 
-      def checkout(revision, destination)
-        add_git_external_commands(:checkout, revision, destination)
+      def checkout_with_externals(revision, destination)
+        add_git_external_commands(:checkout_without_externals, revision, destination)
       end
 
-      def sync(revision, destination)
-        add_git_external_commands(:sync, revision, destination)
+      def sync_with_externals(revision, destination)
+        add_git_external_commands(:sync_without_externals, revision, destination)
       end
     end
   end
