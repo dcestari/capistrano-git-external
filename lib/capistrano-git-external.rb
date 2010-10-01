@@ -1,5 +1,5 @@
 require 'capistrano/recipes/deploy/scm/git'
-require 'capistrano_git_external/git_patch'
+require 'capistrano-git-external/git-patch'
 
 Capistrano::Deploy::SCM::Git.send(:include, CapistranoGitExternal::GitPatch)
 
